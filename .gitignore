@@ -1,0 +1,11 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE and code editor
+.idea/
+.vscode/
+*.code-workspace
+
+# Rust
+/target/
