@@ -10,3 +10,6 @@ license = "MIT"
 edition = "2021"
 
 [dependencies]
+md-5 = "0.10.6"
+hex = "0.4.3"
+clap = "4.5.18"
