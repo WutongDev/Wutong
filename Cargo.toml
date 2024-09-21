@@ -1,0 +1,12 @@
+[package]
+name = "wutong"
+version = "0.1.0-alpha"
+authors = [
+    "Gavin Zheng <gav.zheng@outlook.com>",
+]
+description = "Wutong - A Swiss Army Knife of Developers."
+repository = "https://github.com/wutongdev/wutong"
+license = "MIT"
+edition = "2021"
+
+[dependencies]
