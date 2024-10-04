@@ -3,7 +3,6 @@ use clap::{Arg, ArgGroup, Command};
 mod base_conversion;
 mod md5;
 mod tests;
-mod wutong_dev;
 
 fn main() {
     let app = Command::new("Wutong")
@@ -43,7 +42,7 @@ fn main() {
                 )
                 .group(
                     ArgGroup::new("base_conversion_options")
-                        .args(&["binary", "octal", "decimal", "hexadecimal"])
+                        .args(["binary", "octal", "decimal", "hexadecimal"])
                         .required(true)
                         .multiple(false),
                 ),
@@ -57,47 +56,58 @@ fn main() {
             println!("{}", md5::md5_text::md5_text(text.to_string()));
         }
         Some(("bc", subcommand_bc)) => {
-            enum BaseConversion {
-                Binary,
-                Octal,
-                Decimal,
-                Hexadecimal,
-            }
-            let base= match () {
-                _ if (*subcommand_bc).contains_id("binary") => BaseConversion::Binary,
-                _ if (*subcommand_bc).contains_id("octal") => BaseConversion::Octal,
-                _ if (*subcommand_bc).contains_id("decimal") => BaseConversion::Decimal,
-                _ if (*subcommand_bc).contains_id("hexadecimal") => BaseConversion::Hexadecimal,
+            match () {
+                _ if subcommand_bc.contains_id("binary") => {
+                    let result = base_conversion::math::binary(
+                        subcommand_bc.get_one::<String>("binary").unwrap(),
+                    );
+                    println!(
+                        "Binary:      {} \nOctal:       {} \nDecimal:     {} \nHexadecimal: {}",
+                        subcommand_bc.get_one::<String>("binary").unwrap(), // Binary
+                        result[0],                                          // Octal
+                        result[1],                                          // Decimal
+                        result[2]                                           // Hexadecimal
+                    )
+                }
+                _ if subcommand_bc.contains_id("octal") => {
+                    let result = base_conversion::math::octal(
+                        subcommand_bc.get_one::<String>("octal").unwrap(),
+                    );
+
+                    println!(
+                        "Binary:      {}\nOctal:       {}\nDecimal:     {} \nHexadecimal: {}",
+                        result[0],                                         // Binary
+                        subcommand_bc.get_one::<String>("octal").unwrap(), // Octal
+                        result[1],                                         // Decimal
+                        result[2]                                          // Hexadecimal
+                    );
+                }
+                _ if subcommand_bc.contains_id("decimal") => {
+                    let result = base_conversion::math::decimal(
+                        subcommand_bc.get_one::<String>("decimal").unwrap(),
+                    );
+                    println!(
+                        "Binary:      {}\nOctal:       {}\nDecimal:     {}\nHexadecimal: {}",
+                        result[0],                                           // Binary
+                        result[1],                                           // Octal
+                        subcommand_bc.get_one::<String>("decimal").unwrap(), // Decimal
+                        result[2]                                            // Hexadecimal
+                    );
+                }
+                _ if subcommand_bc.contains_id("hexadecimal") => {
+                    let result = base_conversion::math::hexadecimal(
+                        subcommand_bc.get_one::<String>("hexadecimal").unwrap(),
+                    );
+                    println!(
+                        "Binary:      {}\nOctal:       {}\nDecimal:     {}\nHexadecimal: {}",
+                        result[0],                                               // Binary
+                        result[1],                                               // Octal
+                        result[2],                                               // Decimal
+                        subcommand_bc.get_one::<String>("hexadecimal").unwrap()  // Hexadecimal
+                    )
+                }
                 _ => panic!("Invalid base conversion option"),
             };
-
-            let result = match base {
-                BaseConversion::Binary => base_conversion::math::example(
-                    subcommand_bc
-                        .get_one::<String>("binary")
-                        .unwrap()
-                        .to_string(),
-                ),
-                BaseConversion::Octal => base_conversion::math::example(
-                    subcommand_bc
-                        .get_one::<String>("octal")
-                        .unwrap()
-                        .to_string(),
-                ),
-                BaseConversion::Decimal => base_conversion::math::example(
-                    subcommand_bc
-                        .get_one::<String>("decimal")
-                        .unwrap()
-                        .to_string(),
-                ),
-                BaseConversion::Hexadecimal => base_conversion::math::example(
-                    subcommand_bc
-                        .get_one::<String>("hexadecimal")
-                        .unwrap()
-                        .to_string(),
-                ),
-            };
-            println!("{}", result);
         }
         _ => {}
     }
