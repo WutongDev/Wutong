@@ -1,7 +1,10 @@
 use clap::{Arg, ArgGroup, Command};
+use colored::*;
 
+mod base;
 mod base_conversion;
 mod md5;
+
 mod tests;
 
 fn main() {
@@ -46,6 +49,46 @@ fn main() {
                         .required(true)
                         .multiple(false),
                 ),
+        )
+        .subcommand(
+            Command::new("base")
+                .about("Encoding in Base16 and Base64")
+                .arg(
+                    Arg::new("encode")
+                        .short('e')
+                        .long("encode")
+                        .help("Encode the text using Base encoding.")
+                        .required(false)
+                        .action(clap::ArgAction::SetTrue), // .conflicts_with("decode"),
+                )
+                /*
+                todo: Add decode
+                .arg(
+                    Arg::new("decode")
+                        .short('d')
+                        .long("decode")
+                        .help("Decode the text using Base decoding.")
+                        .required(false)
+                        .action(clap::ArgAction::SetTrue)
+                        .conflicts_with("encode"),
+                )*/
+                .arg(
+                    Arg::new("text")
+                        .short('t')
+                        .long("text")
+                        .help("Text to be encoded or decoded.")
+                        .required_unless_present_any(["encode"]), // .conflicts_with("file"),
+                ), /*
+                   todo: Add file
+
+                      .arg(
+                          Arg::new("file")
+                              .short('f')
+                              .long("file")
+                              .help("File to be encoded or decoded.")
+                              .required_unless_present_any(["encode", "decode"])
+                              .conflicts_with("text"),
+                      ),*/
         );
 
     let matches = app.get_matches();
@@ -109,6 +152,35 @@ fn main() {
                 _ => panic!("Invalid base conversion option"),
             };
         }
-        _ => {}
-    }
+        Some(("base", subcommand_base)) => match () {
+            _ if subcommand_base.contains_id("encode") => {
+                if subcommand_base.contains_id("text") {
+                    match base::base_text::base_encode_text(
+                        subcommand_base.get_one::<String>("text").unwrap(),
+                    ) {
+                        Ok(result) => {
+                            println!("base16: {} \nbase64: {}", result[0], result[1])
+                        }
+                        Err(error) => println!(
+                            "{} {}. \n\nFor more information, try '--help'.",
+                            "error:".red(),
+                            error
+                        ),
+                    }
+                }
+            }
+            /*
+            todo: Add decode
+            _ if subcommand_base.contains_id("decode") => {
+                if subcommand_base.contains_id("text") {
+                    }
+                }
+            }
+            */
+            _ => panic!("Invalid base encoding option"),
+        },
+        _ => {
+            println!("Invalid command")
+        }
+    };
 }
